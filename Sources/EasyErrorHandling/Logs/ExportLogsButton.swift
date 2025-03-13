@@ -46,8 +46,8 @@ public struct ExportLogsButton: View {
     
     public var body: some View {
         Button {
-            DispatchQueue.main.async {
-                isCollectingLogs = true
+            isCollectingLogs = true
+            DispatchQueue.global(qos: .userInitiated).async {
                 exportLogs()
                 isCollectingLogs = false
                 showExport = true
