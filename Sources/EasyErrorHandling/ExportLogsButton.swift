@@ -8,7 +8,9 @@
 import SwiftUI
 import OSLog
 
-struct ExportLogsButton: View {
+public struct ExportLogsButton: View {
+    
+    let description: LocalizedStringKey
     
     @EnvironmentObject var errorHandler: ErrorHandler
     
@@ -34,7 +36,11 @@ struct ExportLogsButton: View {
         }
     }
     
-    var body: some View {
+    public init(_ description: LocalizedStringKey) {
+        self.description = description
+    }
+    
+    public var body: some View {
         Button {
             DispatchQueue.main.async {
                 isCollectingLogs = true
@@ -46,15 +52,15 @@ struct ExportLogsButton: View {
             if isCollectingLogs {
                 ProgressView()
             } else {
-                Label("Export Debug Logs", systemImage: "doc.text.fill")
+                Label(description, systemImage: "doc.text.fill")
             }
         }
         .sheet(isPresented: $showExport) {
-            LogDisplay(entries: entries)
+            LogDisplay(entries: entries, title: "Logs", dismissButtonText: "Dismiss", copyToClipboardButtonText: "Copy to Clipboard")
         }
     }
 }
 
 #Preview {
-    ExportLogsButton()
+    ExportLogsButton("Export Debug Logs")
 }

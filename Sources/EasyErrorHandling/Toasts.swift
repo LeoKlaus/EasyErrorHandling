@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-protocol Toast: Identifiable {
+public protocol Toast: Identifiable {
     var id: UUID { get }
     
     var maxWidth: Double { get }
@@ -15,13 +15,13 @@ protocol Toast: Identifiable {
 }
 
 
-class ErrorToast: Toast {
+public class ErrorToast: Toast {
     
-    let maxWidth: Double = .infinity
+    public let maxWidth: Double = .infinity
     
-    let foregroundStyle: Color = .red
+    public let foregroundStyle: Color = .red
     
-    let id = UUID()
+    public let id = UUID()
     
     let errorDescription: String
     
@@ -34,16 +34,16 @@ class ErrorToast: Toast {
     }
 }
 
-final class ProgressToast: NSObject, Toast, @unchecked Sendable {
-    let id = UUID()
+public final class ProgressToast: NSObject, Toast, @unchecked Sendable {
+    public let id = UUID()
     
-    let maxWidth: Double = 200
+    public let maxWidth: Double = 200
     
-    let foregroundStyle: Color = .accentColor
+    public let foregroundStyle: Color = .accentColor
     
     let hint: String
     
-    init(hint: String) {
+    public init(hint: String) {
         self.hint = hint
     }
     

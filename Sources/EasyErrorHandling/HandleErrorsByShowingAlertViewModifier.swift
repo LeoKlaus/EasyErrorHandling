@@ -46,7 +46,7 @@ struct HandleErrorsByShowingAlertViewModifier: ViewModifier {
 }
 
 extension View {
-    func withErrorHandling() -> some View {
+    public func withErrorHandling() -> some View {
         modifier(HandleErrorsByShowingAlertViewModifier())
     }
 }

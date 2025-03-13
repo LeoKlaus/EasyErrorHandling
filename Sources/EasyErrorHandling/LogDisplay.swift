@@ -12,17 +12,29 @@ struct LogEntry: Identifiable {
     let entry: String
 }
 
-struct LogDisplay: View {
+public struct LogDisplay: View {
     
     @Environment(\.dismiss) var dismiss
     
     let entries: [LogEntry]
 
-    init(entries: [String]) {
+    public init(
+        entries: [String],
+        title: LocalizedStringKey,
+        dismissButtonText: LocalizedStringKey,
+        copyToClipboardButtonText: LocalizedStringKey
+    ) {
         self.entries = entries.map{ LogEntry(entry: $0) }
+        self.title = title
+        self.dismissButtonText = dismissButtonText
+        self.copyToClipboardButtonText = copyToClipboardButtonText
     }
     
-    var body: some View {
+    let title: LocalizedStringKey
+    let dismissButtonText: LocalizedStringKey
+    let copyToClipboardButtonText: LocalizedStringKey
+    
+    public var body: some View {
         NavigationStack {
             ScrollView {
                 LazyVStack(alignment: .leading) {
@@ -31,7 +43,7 @@ struct LogDisplay: View {
                     }
                 }
             }
-            .navigationTitle("Logs")
+            .navigationTitle(title)
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
@@ -40,7 +52,7 @@ struct LogDisplay: View {
                     Button {
                         dismiss()
                     } label: {
-                        Label("Dismiss", systemImage: "xmark.circle")
+                        Label(dismissButtonText, systemImage: "xmark.circle")
                     }
                 }
                 
@@ -52,7 +64,7 @@ struct LogDisplay: View {
                         NSPasteboard.general.setString(entries.map{ $0.entry }.joined(separator: "\n"), forType: .multipleTextSelection)
                         #endif
                     } label: {
-                        Label("Copy to Clipboard", systemImage: "doc.on.doc.fill")
+                        Label(copyToClipboardButtonText, systemImage: "doc.on.doc.fill")
                     }
                 }
             }

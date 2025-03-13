@@ -8,9 +8,7 @@
 import OSLog
 import SwiftUI
 
-
-
-class ErrorHandler: ObservableObject {
+public class ErrorHandler: ObservableObject {
     
     private static let logger = Logger(
         subsystem: Bundle.main.bundleIdentifier!,
@@ -22,14 +20,14 @@ class ErrorHandler: ObservableObject {
     
     
     @MainActor
-    func showToast(_ toast: any Toast) {
+    public func showToast(_ toast: any Toast) {
         withAnimation {
             self.toasts.append(toast)
         }
     }
     
     @MainActor
-    func removeToast(_ uuid: UUID) {
+    public func removeToast(_ uuid: UUID) {
         withAnimation {
             self.toasts.removeAll(where: {
                 $0.id == uuid
@@ -43,7 +41,7 @@ class ErrorHandler: ObservableObject {
     }
     
     @MainActor
-    func handle(_ text: String, while performedTask: String, blockUserInteraction: Bool = false) {
+    public func handle(_ text: String, while performedTask: String, blockUserInteraction: Bool = false) {
         Self.logger.error("Error while \(performedTask):\n\(text, privacy: .public)")
         
         if blockUserInteraction {
@@ -58,7 +56,7 @@ class ErrorHandler: ObservableObject {
     }
     
     @MainActor
-    func handle(_ text: String, while performedTask: String, blockUserInteraction: Bool = false, dismissAction: (() -> Void)?) {
+    public func handle(_ text: String, while performedTask: String, blockUserInteraction: Bool = false, dismissAction: (() -> Void)?) {
         Self.logger.error("Error while \(performedTask):\n\(text, privacy: .public)")
         
         if blockUserInteraction {
@@ -73,7 +71,7 @@ class ErrorHandler: ObservableObject {
     }
     
     @MainActor
-    func handle(_ error: Error, while performedTask: String, blockUserInteraction: Bool = false) {
+    public func handle(_ error: Error, while performedTask: String, blockUserInteraction: Bool = false) {
         Self.logger.error("Error while \(performedTask): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
         
         if blockUserInteraction {
@@ -88,7 +86,7 @@ class ErrorHandler: ObservableObject {
     }
     
     @MainActor
-    func handle(_ error: Error, while performedTask: String, blockUserInteraction: Bool = false, dismissAction: (() -> Void)?) {
+    public func handle(_ error: Error, while performedTask: String, blockUserInteraction: Bool = false, dismissAction: (() -> Void)?) {
         Self.logger.error("Error while \(performedTask): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
         if blockUserInteraction {
             currentAlert = ErrorAlert(title: "Error \(performedTask)", message: error.localizedDescription, dismissAction: dismissAction)
