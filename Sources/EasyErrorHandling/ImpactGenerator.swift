@@ -10,6 +10,7 @@ import Foundation
 import SwiftUI
 
 #if os(iOS)
+/// A helper to simplify working with haptic feedback
 class ImpactGenerator {
     static let shared = ImpactGenerator()
     

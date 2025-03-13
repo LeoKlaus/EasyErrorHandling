@@ -1,16 +1,13 @@
 //
 //  LogDisplay.swift
-//  OpenAirScan-next
+//  EasyErrorHandling
 //
 //  Created by Leo Wehrfritz on 25.01.25.
 //
 
 import SwiftUI
 
-struct LogEntry: Identifiable {
-    let id = UUID()
-    let entry: String
-}
+
 
 public struct LogDisplay: View {
     

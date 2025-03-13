@@ -1,13 +1,14 @@
 //
-//  HandleErrorsByShowingAlertViewModifier.swift
-//  Paperparrot-Next
+//  HandleErrorsViewModifier.swift
+//  EasyErrorHandling
 //
 //  Created by Leo Wehrfritz on 20.12.24.
 //
 
 import SwiftUI
 
-struct HandleErrorsByShowingAlertViewModifier: ViewModifier {
+/// A view modifier to show alerts
+struct HandleErrorsViewModifier: ViewModifier {
     
     @StateObject var errorHandler = ErrorHandler()
     
@@ -46,7 +47,8 @@ struct HandleErrorsByShowingAlertViewModifier: ViewModifier {
 }
 
 extension View {
+    /// Enable error handling for this view. Injects `ErrorHandler` environmentObject that can be used to show error messages.
     public func withErrorHandling() -> some View {
-        modifier(HandleErrorsByShowingAlertViewModifier())
+        modifier(HandleErrorsViewModifier())
     }
 }

@@ -1,6 +1,6 @@
 //
 //  ExportLogsButton.swift
-//  OpenAirScan-next
+//  EasyErrorHandling
 //
 //  Created by Leo Wehrfritz on 25.01.25.
 //
@@ -36,6 +36,10 @@ public struct ExportLogsButton: View {
         }
     }
     
+    /**
+     A button to export debug logs.
+     - Parameter description: The text to show on the button.
+     */
     public init(_ description: LocalizedStringKey) {
         self.description = description
     }
