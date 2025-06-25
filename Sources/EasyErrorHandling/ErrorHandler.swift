@@ -15,12 +15,16 @@ public class ErrorHandler: ObservableObject {
         category: String(describing: ErrorHandler.self)
     )
     
+    public static let shared = ErrorHandler()
+    
     /// The currently shown alert
     @Published var currentAlert: ErrorAlert?
     
     /// Currently visible toasts
     @Published private(set) var toasts: [any Toast] = []
     
+    
+    private init() { }
     
     /**
      Shows the given toast to the user.

@@ -10,7 +10,7 @@ import SwiftUI
 /// A view modifier to show alerts
 struct HandleErrorsViewModifier: ViewModifier {
     
-    @StateObject var errorHandler = ErrorHandler()
+    @StateObject var errorHandler = ErrorHandler.shared
     
     func dismiss(_ uuid: UUID) {
         self.errorHandler.removeToast(uuid)
