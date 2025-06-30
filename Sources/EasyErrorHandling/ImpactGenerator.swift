@@ -11,14 +11,14 @@ import SwiftUI
 
 #if os(iOS)
 /// A helper to simplify working with haptic feedback
-class ImpactGenerator {
-    static let shared = ImpactGenerator()
+public class ImpactGenerator {
+    public static let shared = ImpactGenerator()
     
-    func impactOccured(style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
+    public func impactOccured(style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
         UIImpactFeedbackGenerator(style: style).impactOccurred()
     }
     
-    func notify(type: UINotificationFeedbackGenerator.FeedbackType = .success) {
+    public func notify(type: UINotificationFeedbackGenerator.FeedbackType = .success) {
         UINotificationFeedbackGenerator().notificationOccurred(type)
     }
 }
