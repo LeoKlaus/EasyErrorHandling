@@ -59,7 +59,7 @@ extension View {
      ```
      */
     public func throwingRefreshable(taskDescription: String, blockUserInteraction: Bool = false, _ action: @escaping () async throws -> Void, dismissAction: (() -> Void)? = nil) -> some View {
-        modifier(ThrowingTaskViewModifier(action: action, taskDescription: taskDescription, blockUserInteraction: blockUserInteraction, dismissAction: dismissAction))
+        modifier(ThrowingRefreshableViewModifier(action: action, taskDescription: taskDescription, blockUserInteraction: blockUserInteraction, dismissAction: dismissAction))
     }
 }
 
