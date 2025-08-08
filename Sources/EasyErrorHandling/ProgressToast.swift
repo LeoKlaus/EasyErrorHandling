@@ -32,6 +32,10 @@ public final class ProgressToast: NSObject, Toast, @unchecked Sendable {
         queue.sync { _progress = newValue }
     }
     
+    public func invalidate() {
+        self.update(1)
+    }
+    
     var progressObserver: NSKeyValueObservation?
 }
 
