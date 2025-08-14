@@ -34,6 +34,9 @@ public final class ProgressToast: NSObject, Toast, @unchecked Sendable {
     
     public func invalidate() {
         self.update(1)
+        DispatchQueue.main.async {
+            ErrorHandler.shared.removeToast(self.id)
+        }
     }
     
     var progressObserver: NSKeyValueObservation?
