@@ -73,6 +73,19 @@ public class ErrorHandler: ObservableObject {
     }
     
     /**
+     Display information.
+     - Parameters:
+     - text: Information to display.
+     */
+    @MainActor
+    public func showInfo(_ text: String) {
+        self.showToast(InfoToast(text))
+#if os(iOS)
+        ImpactGenerator.shared.notify(type: .success)
+#endif
+    }
+    
+    /**
      Handle an error.
      - Parameters:
         - text: Description of the error.

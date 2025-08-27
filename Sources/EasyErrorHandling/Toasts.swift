@@ -20,10 +20,12 @@ struct ToastView: View {
     var body: some View {
         VStack {
             if let error = toast as? ErrorToast {
-                Label(
-                    error.errorDescription,
-                    systemImage: "exclamationmark.triangle.fill"
-                )
+                Label {
+                    Text(error.errorDescription)
+                        .lineLimit(2)
+                } icon: {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                }
                 .foregroundStyle(.red)
                 .onTapGesture {
                     withAnimation {
@@ -62,6 +64,30 @@ struct ToastView: View {
                                 self.timer = nil
                             }
                             timer.invalidate()
+                        }
+                    }
+                }
+            } else if let info = toast as? InfoToast {
+                Label {
+                    Text(info.description)
+                } icon: {
+                    Image(systemName: "info")
+                        .foregroundStyle(.tint)
+                }
+                .onTapGesture {
+                    withAnimation {
+                        self.dismissToast(self.toast.id)
+                    }
+                }
+                .gesture(DragGesture(minimumDistance: 10).onEnded { _ in
+                    withAnimation {
+                        self.dismissToast(self.toast.id)
+                    }
+                })
+                .task {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                        withAnimation {
+                            self.dismissToast(self.toast.id)
                         }
                     }
                 }
