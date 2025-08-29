@@ -16,13 +16,15 @@ struct HandleErrorsViewModifier: ViewModifier {
         self.errorHandler.removeToast(uuid)
     }
     
+    var onTap: ((ErrorToast) -> Void)?
+    
     func body(content: Content) -> some View {
         content
             .environmentObject(self.errorHandler)
             .overlay(alignment: .top) {
                 VStack {
                     ForEach(self.errorHandler.toasts.prefix(3), id: \.id) { toast in
-                        ToastView(toast: toast)
+                        ToastView(toast: toast, onTap: self.onTap)
                             .environment(\.dismissToast, dismiss)
                     }
                 }
@@ -48,7 +50,7 @@ struct HandleErrorsViewModifier: ViewModifier {
 
 extension View {
     /// Enable error handling for this view. Injects `ErrorHandler` environmentObject that can be used to show error messages.
-    public func withErrorHandling() -> some View {
-        modifier(HandleErrorsViewModifier())
+    public func withErrorHandling(onTap: ((ErrorToast) -> Void)? = nil) -> some View {
+        modifier(HandleErrorsViewModifier(onTap: onTap))
     }
 }

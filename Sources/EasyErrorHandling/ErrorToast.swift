@@ -16,13 +16,13 @@ public class ErrorToast: Toast {
     
     public let id = UUID()
     
-    let errorDescription: String
+    public let errorDescription: String
     
-    init(error: Error) {
+    public init(error: Error) {
         self.errorDescription = error.localizedDescription
     }
     
-    init(errorDescription: String) {
+    public init(errorDescription: String) {
         self.errorDescription = errorDescription
     }
 }

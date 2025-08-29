@@ -60,6 +60,10 @@ public class ErrorHandler: ObservableObject {
         self.toasts = []
     }
     
+    /**
+     Export collected logs.
+     - Returns: An array of strings, each representing a single log entry.
+     */
     public func exportLogs() throws -> [String] {
         let store = try OSLogStore(scope: .currentProcessIdentifier)
         let date = Date.now.addingTimeInterval(-24 * 3600)

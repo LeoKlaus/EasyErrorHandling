@@ -17,6 +17,8 @@ struct ToastView: View {
     @State private var progress: Double = 0
     @State private var timer: Timer?
     
+    var onTap: ((ErrorToast) -> Void)?
+    
     var body: some View {
         VStack {
             if let error = toast as? ErrorToast {
@@ -28,8 +30,12 @@ struct ToastView: View {
                 }
                 .foregroundStyle(.red)
                 .onTapGesture {
-                    withAnimation {
-                        self.dismissToast(self.toast.id)
+                    if let onTap {
+                        onTap(error)
+                    } else {
+                        withAnimation {
+                            self.dismissToast(self.toast.id)
+                        }
                     }
                 }
                 .gesture(DragGesture(minimumDistance: 10).onEnded { _ in
