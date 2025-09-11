@@ -84,7 +84,7 @@ public class ErrorHandler: ObservableObject {
     @MainActor
     public func showInfo(_ text: String) {
         self.showToast(InfoToast(text))
-#if os(iOS)
+#if os(iOS) && !targetEnvironment(simulator)
         ImpactGenerator.shared.notify(type: .success)
 #endif
     }
@@ -106,7 +106,7 @@ public class ErrorHandler: ObservableObject {
             self.showToast(ErrorToast(errorDescription: text))
         }
         
-        #if os(iOS)
+        #if os(iOS) && !targetEnvironment(simulator)
         ImpactGenerator.shared.notify(type: .error)
         #endif
     }
@@ -125,7 +125,7 @@ public class ErrorHandler: ObservableObject {
         
         currentAlert = ErrorAlert(title: "Error \(performedTask)", message: text, dismissAction: dismissAction)
         
-        #if os(iOS)
+        #if os(iOS) && !targetEnvironment(simulator)
         ImpactGenerator.shared.notify(type: .error)
         #endif
     }
@@ -148,7 +148,7 @@ public class ErrorHandler: ObservableObject {
             self.showToast(ErrorToast(error: error))
         }
         
-        #if os(iOS)
+        #if os(iOS) && !targetEnvironment(simulator)
         ImpactGenerator.shared.notify(type: .error)
         #endif
     }
@@ -167,7 +167,7 @@ public class ErrorHandler: ObservableObject {
         
         currentAlert = ErrorAlert(title: "Error \(performedTask)", message: error.localizedDescription, dismissAction: dismissAction)
         
-        #if os(iOS)
+        #if os(iOS) && !targetEnvironment(simulator)
         ImpactGenerator.shared.notify(type: .error)
         #endif
     }
