@@ -98,7 +98,7 @@ public class ErrorHandler: ObservableObject {
      */
     @MainActor
     public func handle(_ text: String, while performedTask: String, blockUserInteraction: Bool = false) {
-        Self.logger.error("Error while \(performedTask):\n\(text, privacy: .public)")
+        Self.logger.error("Error while \(performedTask, privacy: .public):\n\(text, privacy: .public)")
         
         if blockUserInteraction {
             currentAlert = ErrorAlert(title: "Error \(performedTask)", message: text)
@@ -121,7 +121,7 @@ public class ErrorHandler: ObservableObject {
      */
     @MainActor
     public func handle(_ text: String, while performedTask: String, blockUserInteraction: Bool = false, dismissAction: (() -> Void)?) {
-        Self.logger.error("Error while \(performedTask):\n\(text, privacy: .public)")
+        Self.logger.error("Error while \(performedTask, privacy: .public):\n\(text, privacy: .public)")
         
         currentAlert = ErrorAlert(title: "Error \(performedTask)", message: text, dismissAction: dismissAction)
         
@@ -140,7 +140,7 @@ public class ErrorHandler: ObservableObject {
      */
     @MainActor
     public func handle(_ error: Error, while performedTask: String, blockUserInteraction: Bool = false) {
-        Self.logger.error("Error while \(performedTask): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
+        Self.logger.error("Error while \(performedTask, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
         
         if blockUserInteraction {
             currentAlert = ErrorAlert(title: "Error \(performedTask)", message: error.localizedDescription)
@@ -163,7 +163,7 @@ public class ErrorHandler: ObservableObject {
      */
     @MainActor
     public func handle(_ error: Error, while performedTask: String, dismissAction: (() -> Void)?) {
-        Self.logger.error("Error while \(performedTask): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
+        Self.logger.error("Error while \(performedTask, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
         
         currentAlert = ErrorAlert(title: "Error \(performedTask)", message: error.localizedDescription, dismissAction: dismissAction)
         
