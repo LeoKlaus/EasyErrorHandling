@@ -23,8 +23,13 @@ struct ToastView: View {
         VStack {
             if let error = toast as? ErrorToast {
                 Label {
-                    Text(error.errorDescription)
-                        .lineLimit(2)
+                    VStack(alignment: .leading) {
+                        Text(error.errorDescription)
+                            .lineLimit(2)
+                        Text("Tap for more information")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
                 } icon: {
                     Image(systemName: "exclamationmark.triangle.fill")
                 }
@@ -111,4 +116,8 @@ struct ToastView: View {
 
 extension EnvironmentValues {
     @Entry var dismissToast: (UUID) -> () = { _ in }
+}
+
+#Preview {
+    ToastView(toast: ErrorToast(errorDescription: "Some error"))
 }
