@@ -137,29 +137,19 @@ public class ErrorHandler: ObservableObject {
         #endif
     }
     
-    private func enableNetworkErrorSuppressionIfApplicable(_ error: Error) {
-        if autoSuppressNetworkErrors {
-            switch error {
-            case URLError.cannotFindHost, URLError.cannotConnectToHost, URLError.notConnectedToInternet:
-                self.suppressNetworkErrors = true
-            default:
-                break
-            }
-        }
-    }
-    
     /**
      Handle an error.
      - Parameters:
         - error: The error to handle. Should conform to `LocalizedError`.
         - while: The task that is throwing the error (this will be shown to the user as `Error while <performedTask>`).
+        - suppressable: Whether this error message can be suppressed if it's a network error. Only applies if `suppressNetworkErrors` is enabled.
         - blockUserInteraction: Whether this error should be shown as toast or alert.
      */
     @MainActor
-    public func handle(_ error: Error, while performedTask: String, blockUserInteraction: Bool = false) {
+    public func handle(_ error: Error, while performedTask: String, suppressable: Bool = false, blockUserInteraction: Bool = false) {
         Self.logger.error("Error while \(performedTask, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
         
-        if self.suppressNetworkErrors {
+        if self.suppressNetworkErrors && suppressable && error.isNetworkingError {
             return
         }
         
@@ -173,7 +163,9 @@ public class ErrorHandler: ObservableObject {
         ImpactGenerator.shared.notify(type: .error)
         #endif
         
-        self.enableNetworkErrorSuppressionIfApplicable(error)
+        if autoSuppressNetworkErrors && error.isNetworkingError {
+            self.suppressNetworkErrors = true
+        }
     }
     
     
@@ -182,13 +174,14 @@ public class ErrorHandler: ObservableObject {
      - Parameters:
         - error: The error to handle. Should conform to `LocalizedError`.
         - while: The task that is throwing the error (this will be shown to the user as `Error while <performedTask>`).
+        - suppressable: Whether this error message can be suppressed if it's a network error. Only applies if `suppressNetworkErrors` is enabled.
         - dismissAction: A function that will be executed when the user dismisses the alert.
      */
     @MainActor
-    public func handle(_ error: Error, while performedTask: String, dismissAction: (() -> Void)?) {
+    public func handle(_ error: Error, while performedTask: String, suppressable: Bool = false, dismissAction: (() -> Void)?) {
         Self.logger.error("Error while \(performedTask, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
         
-        if self.suppressNetworkErrors {
+        if self.suppressNetworkErrors && suppressable && error.isNetworkingError {
             return
         }
         
@@ -198,6 +191,8 @@ public class ErrorHandler: ObservableObject {
         ImpactGenerator.shared.notify(type: .error)
         #endif
         
-        self.enableNetworkErrorSuppressionIfApplicable(error)
+        if autoSuppressNetworkErrors && error.isNetworkingError {
+            self.suppressNetworkErrors = true
+        }
     }
 }
