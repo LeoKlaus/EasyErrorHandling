@@ -17,6 +17,13 @@ public class ErrorHandler: ObservableObject {
     
     public static let shared = ErrorHandler()
     
+    /// Whether to show error messages for network errors
+    public var suppressNetworkErrors: Bool = false
+    
+    /// Whether to automatically set `suppressNetworkErrors` to true after the first networking error is handled
+    public var autoSuppressNetworkErrors: Bool = false
+    
+    
     /// The currently shown alert
     @Published var currentAlert: ErrorAlert?
     
@@ -130,6 +137,16 @@ public class ErrorHandler: ObservableObject {
         #endif
     }
     
+    private func enableNetworkErrorSuppressionIfApplicable(_ error: Error) {
+        if autoSuppressNetworkErrors {
+            switch error {
+            case URLError.cannotFindHost, URLError.cannotConnectToHost, URLError.notConnectedToInternet:
+                self.suppressNetworkErrors = true
+            default:
+                break
+            }
+        }
+    }
     
     /**
      Handle an error.
@@ -142,6 +159,10 @@ public class ErrorHandler: ObservableObject {
     public func handle(_ error: Error, while performedTask: String, blockUserInteraction: Bool = false) {
         Self.logger.error("Error while \(performedTask, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
         
+        if self.suppressNetworkErrors {
+            return
+        }
+        
         if blockUserInteraction {
             currentAlert = ErrorAlert(title: "Error \(performedTask)", message: error.localizedDescription)
         } else {
@@ -151,6 +172,8 @@ public class ErrorHandler: ObservableObject {
         #if os(iOS) && !targetEnvironment(simulator)
         ImpactGenerator.shared.notify(type: .error)
         #endif
+        
+        self.enableNetworkErrorSuppressionIfApplicable(error)
     }
     
     
@@ -165,10 +188,16 @@ public class ErrorHandler: ObservableObject {
     public func handle(_ error: Error, while performedTask: String, dismissAction: (() -> Void)?) {
         Self.logger.error("Error while \(performedTask, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
         
+        if self.suppressNetworkErrors {
+            return
+        }
+        
         currentAlert = ErrorAlert(title: "Error \(performedTask)", message: error.localizedDescription, dismissAction: dismissAction)
         
         #if os(iOS) && !targetEnvironment(simulator)
         ImpactGenerator.shared.notify(type: .error)
         #endif
+        
+        self.enableNetworkErrorSuppressionIfApplicable(error)
     }
 }
