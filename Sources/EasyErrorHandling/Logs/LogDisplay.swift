@@ -59,7 +59,10 @@ public struct LogDisplay: View {
                         #if canImport(UIKit)
                         UIPasteboard.general.string = entries.map{ $0.entry }.joined(separator: "\n")
                         #else
-                        NSPasteboard.general.setString(entries.map{ $0.entry }.joined(separator: "\n"), forType: .multipleTextSelection)
+                        let pasteboard = NSPasteboard.general
+                        pasteboard.declareTypes([.string], owner: nil)
+                        pasteboard.setString(entries.map{ $0.entry }.joined(separator: "\n"), forType: .string)
+                        print(entries.map{ $0.entry }.joined(separator: "\n"))
                         #endif
                     } label: {
                         Label(copyToClipboardButtonText, systemImage: "doc.on.doc.fill")
