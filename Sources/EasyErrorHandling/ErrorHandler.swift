@@ -18,11 +18,75 @@ public class ErrorHandler: ObservableObject {
     public static let shared = ErrorHandler()
     
     /// Whether to show error messages for network errors
-    public var suppressNetworkErrors: Bool = false
+    private(set) var suppressErrors: Bool = false
     
-    /// Whether to automatically set `suppressNetworkErrors` to true after the first networking error is handled
-    public var autoSuppressNetworkErrors: Bool = false
+    /**
+     Object that determines whether an error is suppressable or not. Always returns false by default.
+     
+     Override
+     ``` swift
+     ErrorSuppressor.isSuppressable(any Error)
+     ```
+     to define which errors can be suppressed.
+     
+     To enable/disable suppression, use
+     ``` swift
+     ErrorHandler.enableErrorSuppression(ErrorSuppressor, Bool)
+     ```
+     and
+     ``` swift
+     ErrorHandler.disableErrorSuppression()
+     ```
+     */
+    private(set) var suppressor: ErrorSuppressor = DefaultErrorSuppressor()
     
+    /**
+     Whether to automatically set `suppressErrors` to true after the first matching error is handled.
+     
+     To use this, pass `true` for `enableAutomaticSuppression` when enabling suppression with
+     ``` swift
+     ErrorHandler.enableErrorSuppression(ErrorSuppressor, Bool)
+     ```
+    */
+    private(set) var autoSuppressErrors: Bool = false
+    
+    /**
+     Enable suppression of certain errors.
+     
+     - Parameter suppressor: The suppressor that should be used for error suppression. `isSuppressable(any Error)` should be overriden.
+     - Parameter showFirstInstance: Whether or not to show the first instance of the error to the user.
+     
+     Which errors are suppressable is determined by
+     ``` swift
+     ErrorSuppressor.isSuppressable(any Error)
+     ```
+     the default implementation always returns false.  Additionally, when calling any of the
+     ``` swift
+     ErrorHandler.handle
+     ```
+     methods, `suppressable` has to be set to true.
+     
+     Even with suppression active, all handled errors will still be logged, only the user facing toasts/alerts are suppressed.
+     */
+    public func enableErrorSuppression(_ suppressor: ErrorSuppressor, showFirstInstance: Bool = false) {
+        self.suppressor = suppressor
+        self.autoSuppressErrors = showFirstInstance
+        self.suppressErrors = !showFirstInstance
+    }
+    
+    /**
+     Disable error suppression.
+     
+     For more information, refer to the documentation of
+     ``` swift
+     ErrorHandler.enableErrorSuppression(ErrorSuppressor, Bool)
+     ```
+     */
+    public func disableErrorSuppression() {
+        self.suppressor = DefaultErrorSuppressor()
+        self.suppressErrors = false
+        self.autoSuppressErrors = false
+    }
     
     /// The currently shown alert
     @Published var currentAlert: ErrorAlert?
@@ -149,7 +213,7 @@ public class ErrorHandler: ObservableObject {
     public func handle(_ error: Error, while performedTask: String, suppressable: Bool = false, blockUserInteraction: Bool = false) {
         Self.logger.error("Error while \(performedTask, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
         
-        if self.suppressNetworkErrors && suppressable && error.isNetworkingError {
+        if self.suppressErrors && suppressable && self.suppressor.isSuppressable(error) {
             return
         }
         
@@ -163,8 +227,8 @@ public class ErrorHandler: ObservableObject {
         ImpactGenerator.shared.notify(type: .error)
         #endif
         
-        if autoSuppressNetworkErrors && error.isNetworkingError {
-            self.suppressNetworkErrors = true
+        if autoSuppressErrors && self.suppressor.isSuppressable(error) {
+            self.suppressErrors = true
         }
     }
     
@@ -181,7 +245,7 @@ public class ErrorHandler: ObservableObject {
     public func handle(_ error: Error, while performedTask: String, suppressable: Bool = false, dismissAction: (() -> Void)?) {
         Self.logger.error("Error while \(performedTask, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
         
-        if self.suppressNetworkErrors && suppressable && error.isNetworkingError {
+        if self.suppressErrors && suppressable && self.suppressor.isSuppressable(error) {
             return
         }
         
@@ -191,8 +255,8 @@ public class ErrorHandler: ObservableObject {
         ImpactGenerator.shared.notify(type: .error)
         #endif
         
-        if autoSuppressNetworkErrors && error.isNetworkingError {
-            self.suppressNetworkErrors = true
+        if autoSuppressErrors && self.suppressor.isSuppressable(error) {
+            self.suppressErrors = true
         }
     }
 }
