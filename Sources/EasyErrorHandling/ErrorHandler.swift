@@ -88,6 +88,9 @@ public class ErrorHandler: ObservableObject {
         self.autoSuppressErrors = false
     }
     
+    /// Whether or not `Task.isCancelled` should be handled and logged or not.
+    public var ignoreCancellations: Bool = true
+    
     /// The currently shown alert
     @Published var currentAlert: ErrorAlert?
     
@@ -169,6 +172,11 @@ public class ErrorHandler: ObservableObject {
      */
     @MainActor
     public func handle(_ text: String, while performedTask: String, blockUserInteraction: Bool = false) {
+        if Task.isCancelled && self.ignoreCancellations {
+            Self.logger.debug("\(performedTask, privacy: .public) was cancelled.")
+            return
+        }
+        
         Self.logger.error("Error while \(performedTask, privacy: .public):\n\(text, privacy: .public)")
         
         if blockUserInteraction {
@@ -192,6 +200,11 @@ public class ErrorHandler: ObservableObject {
      */
     @MainActor
     public func handle(_ text: String, while performedTask: String, blockUserInteraction: Bool = false, dismissAction: (() -> Void)?) {
+        if Task.isCancelled && self.ignoreCancellations {
+            Self.logger.debug("\(performedTask, privacy: .public) was cancelled.")
+            return
+        }
+        
         Self.logger.error("Error while \(performedTask, privacy: .public):\n\(text, privacy: .public)")
         
         currentAlert = ErrorAlert(title: "Error \(performedTask)", message: text, dismissAction: dismissAction)
@@ -211,6 +224,11 @@ public class ErrorHandler: ObservableObject {
      */
     @MainActor
     public func handle(_ error: Error, while performedTask: String, suppressable: Bool = false, blockUserInteraction: Bool = false) {
+        if Task.isCancelled && self.ignoreCancellations {
+            Self.logger.debug("\(performedTask, privacy: .public) was cancelled.")
+            return
+        }
+        
         Self.logger.error("Error while \(performedTask, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
         
         if self.suppressErrors && suppressable && self.suppressor.isSuppressable(error) {
@@ -243,6 +261,11 @@ public class ErrorHandler: ObservableObject {
      */
     @MainActor
     public func handle(_ error: Error, while performedTask: String, suppressable: Bool = false, dismissAction: (() -> Void)?) {
+        if Task.isCancelled && self.ignoreCancellations {
+            Self.logger.debug("\(performedTask, privacy: .public) was cancelled.")
+            return
+        }
+        
         Self.logger.error("Error while \(performedTask, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
         
         if self.suppressErrors && suppressable && self.suppressor.isSuppressable(error) {
