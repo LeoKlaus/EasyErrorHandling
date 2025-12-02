@@ -72,6 +72,7 @@ public class ErrorHandler: ObservableObject {
         self.suppressor = suppressor
         self.autoSuppressErrors = showFirstInstance
         self.suppressErrors = !showFirstInstance
+        Self.logger.debug("Error suppression enabled. Using \(type(of: suppressor), privacy: .public),\nautoSuppressErrors: \(self.autoSuppressErrors, privacy: .public),\nsuppressErrors: \(self.suppressErrors)")
     }
     
     /**
@@ -86,6 +87,7 @@ public class ErrorHandler: ObservableObject {
         self.suppressor = DefaultErrorSuppressor()
         self.suppressErrors = false
         self.autoSuppressErrors = false
+        Self.logger.debug("Error suppression disabled.")
     }
     
     /// Whether or not `Task.isCancelled` should be handled and logged or not.
