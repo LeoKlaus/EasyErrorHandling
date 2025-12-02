@@ -15,6 +15,8 @@ struct ThrowingTaskViewModifier: ViewModifier {
     let action: () async throws -> Void
     /// Description of the task (shown in error message)
     let taskDescription: String
+    /// Whether this error message can be suppressed if it's a network error. Only applies if `suppressNetworkErrors` is enabled
+    var suppressable: Bool = false
     /// Whether the error should be blocking (alert) or not (toast)
     var blockUserInteraction: Bool = false
     /// An action to perform when the user dismisses the alert (automatically enables blocking)
@@ -26,9 +28,9 @@ struct ThrowingTaskViewModifier: ViewModifier {
             try await action()
         } catch {
             if let dismissAction {
-                self.errorHandler.handle(error, while: self.taskDescription, dismissAction: dismissAction)
+                self.errorHandler.handle(error, while: self.taskDescription, suppressable: self.suppressable, dismissAction: dismissAction)
             } else {
-                self.errorHandler.handle(error, while: self.taskDescription, blockUserInteraction: self.blockUserInteraction)
+                self.errorHandler.handle(error, while: self.taskDescription, suppressable: self.suppressable, blockUserInteraction: self.blockUserInteraction)
             }
         }
     }
@@ -47,6 +49,7 @@ extension View {
      - Parameter taskDescription:       A description of the task, this will be shown to the user in error messages.
      - Parameter blockUserInteraction:  Whether the error should be blocking (alert) or not (toast)
      - Parameter action:                The task to perform.
+     - Parameter suppressable:          Whether this error message can be suppressed if it's a network error. Only applies if `suppressNetworkErrors` is enabled.
      - Parameter dismissAction:         An action to perform when the user dismisses the alert (automatically enables blocking).
      
      Errors will only be visibly handled if an `ErrorHandler` is injected into the calling view. If no `ErrorHandler` is present in the Environment, errors will be logged but not presented to the user.
@@ -57,8 +60,8 @@ extension View {
      .withErrorHandling()
      ```        
      */
-    public func throwingTask(taskDescription: String, blockUserInteraction: Bool = false, _ action: @escaping () async throws -> Void, dismissAction: (() -> Void)? = nil) -> some View {
-        modifier(ThrowingTaskViewModifier(action: action, taskDescription: taskDescription, blockUserInteraction: blockUserInteraction, dismissAction: dismissAction))
+    public func throwingTask(taskDescription: String, blockUserInteraction: Bool = false, suppressable: Bool = false, _ action: @escaping () async throws -> Void, dismissAction: (() -> Void)? = nil) -> some View {
+        modifier(ThrowingTaskViewModifier(action: action, taskDescription: taskDescription, suppressable: suppressable, blockUserInteraction: blockUserInteraction, dismissAction: dismissAction))
     }
 }
 
