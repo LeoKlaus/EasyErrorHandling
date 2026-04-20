@@ -17,12 +17,15 @@ public class ErrorToast: Toast {
     public let id = UUID()
     
     public let errorDescription: String
+    public let rawError: Error?
     
     public init(error: Error) {
         self.errorDescription = error.localizedDescription
+        self.rawError = error
     }
     
     public init(errorDescription: String) {
         self.errorDescription = errorDescription
+        self.rawError = nil
     }
 }
