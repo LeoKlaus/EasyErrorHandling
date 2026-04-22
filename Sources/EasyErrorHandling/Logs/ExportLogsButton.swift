@@ -53,6 +53,7 @@ public struct ExportLogsButton: View {
         }
         .sheet(isPresented: $showExport) {
             LogDisplay(entries: entries, title: "Logs", dismissButtonText: "Dismiss", copyToClipboardButtonText: "Copy to Clipboard")
+                .padding(.horizontal)
         }
     }
 }
