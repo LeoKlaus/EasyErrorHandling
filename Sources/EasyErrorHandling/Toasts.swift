@@ -49,9 +49,11 @@ struct ToastView: View {
                     VStack(alignment: .leading) {
                         Text(error.errorDescription)
                             .lineLimit(2)
+                        #if !os(tvOS)
                         Text("Tap for more information")
                             .font(.caption)
                             .foregroundStyle(.secondary)
+                        #endif
                     }
                 } icon: {
                     Image(systemName: "exclamationmark.triangle.fill")
@@ -72,6 +74,8 @@ struct ToastView: View {
                     progress.hint,
                     value: self.progress
                 )
+                .lineLimit(1)
+                .minimumScaleFactor(0.5)
                 .foregroundStyle(.secondary)
                 .task {
                     for await value in progress.progressUpdates {
@@ -114,6 +118,32 @@ extension EnvironmentValues {
     @Entry var dismissToast: (UUID) -> () = { _ in }
 }
 
-#Preview {
-    ToastView(toast: ErrorToast(errorDescription: "Some error", performedTask: "loading something"))
+#Preview("Error") {
+    VStack {
+        
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .overlay(alignment: .top) {
+        ToastView(toast: ErrorToast(errorDescription: "Some error", performedTask: "loading something"))
+    }
+}
+
+#Preview("Info") {
+    VStack {
+        
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .overlay(alignment: .top) {
+        ToastView(toast: InfoToast("Some Information"))
+    }
+}
+
+#Preview("Progress") {
+    VStack {
+        
+    }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .overlay(alignment: .top) {
+        ToastView(toast: ProgressToast(hint: "Downloading..."))
+    }
 }
