@@ -9,7 +9,7 @@ import Foundation
 
 public struct ErrorAlert: Identifiable {
     public var id = UUID()
-    public var title: LocalizedStringResource = LocalizedStringResource("Error", bundle: .module)
+    public var title: LocalizedStringResource
     public var message: LocalizedStringResource
     public var dismissAction: (() -> Void)?
     

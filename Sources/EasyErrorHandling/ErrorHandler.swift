@@ -176,7 +176,7 @@ public final class ErrorHandler: ObservableObject {
         Self.logger.error("Error while \(performedTask.key, privacy: .public):\n\(text.key, privacy: .public)")
 
         if blockUserInteraction || dismissAction != nil {
-            currentAlert = ErrorAlert(title: LocalizedStringResource("Error \(performedTask)", bundle: .module), message: text, dismissAction: dismissAction)
+            currentAlert = ErrorAlert(title: LocalizedStringResource("Error while \(performedTask)"), message: text, dismissAction: dismissAction)
         } else {
             self.showToast(ErrorToast(errorDescription: text, performedTask: performedTask))
         }
@@ -208,7 +208,7 @@ public final class ErrorHandler: ObservableObject {
         }
 
         if blockUserInteraction || dismissAction != nil {
-            currentAlert = ErrorAlert(title: LocalizedStringResource("Error \(performedTask)", bundle: .module), error: error, dismissAction: dismissAction)
+            currentAlert = ErrorAlert(title: LocalizedStringResource("Error while \(performedTask)"), error: error, dismissAction: dismissAction)
         } else {
             self.showToast(ErrorToast(error: error, performedTask: performedTask))
         }

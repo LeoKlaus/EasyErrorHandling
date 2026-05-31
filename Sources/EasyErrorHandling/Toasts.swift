@@ -47,7 +47,7 @@ struct ToastView: View {
                     VStack(alignment: .leading) {
                         Text(error.errorDescription)
                             .lineLimit(2)
-                        Text("Tap for more information", bundle: .module)
+                        Text("Tap for more information")
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }

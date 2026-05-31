@@ -25,7 +25,7 @@ public struct ExportLogsButton: View {
         do {
             entries = try await self.errorHandler.exportLogs()
         } catch {
-            errorHandler.handle(error, while: LocalizedStringResource("exporting logs", bundle: .module))
+            errorHandler.handle(error, while: LocalizedStringResource("exporting logs"))
         }
     }
     
@@ -53,8 +53,13 @@ public struct ExportLogsButton: View {
             }
         }
         .sheet(isPresented: $showExport) {
-            LogDisplay(entries: entries, title: LocalizedStringResource("Logs", bundle: .module), dismissButtonText: LocalizedStringResource("Dismiss", bundle: .module), copyToClipboardButtonText: LocalizedStringResource("Copy to clipboard", bundle: .module))
-                .padding(.horizontal)
+            LogDisplay(
+                entries: entries,
+                title: LocalizedStringResource("Logs"),
+                dismissButtonText: LocalizedStringResource("Dismiss"),
+                copyToClipboardButtonText: LocalizedStringResource("Copy to clipboard")
+            )
+            .padding(.horizontal)
         }
     }
 }
