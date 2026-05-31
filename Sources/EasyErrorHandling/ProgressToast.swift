@@ -19,27 +19,31 @@ public final class ProgressToast: NSObject, Toast {
 
     let hint: LocalizedStringResource
 
+    let progressUpdates: AsyncStream<Double>
+    private let continuation: AsyncStream<Double>.Continuation
+
     public init(hint: LocalizedStringResource) {
+        (progressUpdates, continuation) = AsyncStream<Double>.makeStream()
         self.hint = hint
     }
 
-    private(set) var progress: Double = 0
-
     public func invalidate() {
-        progress = 1
-        ErrorHandler.shared.removeToast(id)
+        continuation.finish()
     }
-
-    private var progressObserver: NSKeyValueObservation?
 }
 
-extension ProgressToast: @preconcurrency URLSessionTaskDelegate {
-    
-    public func urlSession(_ session: URLSession, didCreateTask task: URLSessionTask) {
-        progressObserver = task.progress.observe(\.fractionCompleted) { [weak self] prog, _ in
-            Task { @MainActor [weak self] in
-                self?.progress = prog.fractionCompleted
+extension ProgressToast: URLSessionTaskDelegate {
+
+    nonisolated public func urlSession(_ session: URLSession, didCreateTask task: URLSessionTask) {
+        let observer = task.progress.observe(\.fractionCompleted) { [weak self] prog, _ in
+            let value = prog.fractionCompleted
+            self?.continuation.yield(value)
+            if value >= 1 {
+                self?.continuation.finish()
             }
+        }
+        continuation.onTermination = { _ in
+            observer.invalidate()
         }
     }
 }

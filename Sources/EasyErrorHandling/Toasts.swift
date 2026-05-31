@@ -72,15 +72,11 @@ struct ToastView: View {
                 )
                 .foregroundStyle(.secondary)
                 .task {
-                    while !Task.isCancelled {
-                        self.progress = progress.progress
-                        if progress.progress >= 1 {
-                            withAnimation {
-                                self.dismissToast(self.toast.id)
-                            }
-                            break
-                        }
-                        try? await Task.sleep(for: .milliseconds(500))
+                    for await value in progress.progressUpdates {
+                        self.progress = value
+                    }
+                    withAnimation {
+                        self.dismissToast(self.toast.id)
                     }
                 }
             } else if let info = toast as? InfoToast {
