@@ -11,8 +11,10 @@ import SwiftUI
 @MainActor
 public final class ErrorHandler: ObservableObject {
     
+    private static let subsystem = Bundle.main.bundleIdentifier ?? ""
+
     private static let logger = Logger(
-        subsystem: Bundle.main.bundleIdentifier!,
+        subsystem: subsystem,
         category: String(describing: ErrorHandler.self)
     )
     
@@ -131,8 +133,8 @@ public final class ErrorHandler: ObservableObject {
      - Returns: An array of strings, each representing a single log entry.
      */
     public func exportLogs() async throws -> [String] {
-        let subsystem = Bundle.main.bundleIdentifier!
         return try await Task.detached(priority: .userInitiated) {
+            let subsystem = await Self.subsystem
             let store = try OSLogStore(scope: .currentProcessIdentifier)
             let date = Date.now.addingTimeInterval(-24 * 3600)
             let position = store.position(date: date)
