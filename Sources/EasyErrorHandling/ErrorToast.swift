@@ -16,16 +16,24 @@ public class ErrorToast: Toast {
     
     public let id = UUID()
     
+    /// Textual description of the error
     public let errorDescription: String
+    
+    /// The thrown error, if applicable
     public let rawError: Error?
     
-    public init(error: Error) {
+    /// Textual description of the task that caused the error
+    public let performedTask: LocalizedStringResource
+    
+    public init(error: Error, performedTask: LocalizedStringResource) {
         self.errorDescription = error.localizedDescription
         self.rawError = error
+        self.performedTask = performedTask
     }
     
-    public init(errorDescription: String) {
-        self.errorDescription = errorDescription
+    public init(errorDescription: LocalizedStringResource, performedTask: LocalizedStringResource) {
+        self.errorDescription = String(localized: errorDescription)
         self.rawError = nil
+        self.performedTask = performedTask
     }
 }

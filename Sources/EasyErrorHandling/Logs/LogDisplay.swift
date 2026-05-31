@@ -7,8 +7,6 @@
 
 import SwiftUI
 
-
-
 public struct LogDisplay: View {
     
     @Environment(\.dismiss) var dismiss
@@ -17,9 +15,9 @@ public struct LogDisplay: View {
 
     public init(
         entries: [String],
-        title: LocalizedStringKey,
-        dismissButtonText: LocalizedStringKey,
-        copyToClipboardButtonText: LocalizedStringKey
+        title: LocalizedStringResource,
+        dismissButtonText: LocalizedStringResource,
+        copyToClipboardButtonText: LocalizedStringResource
     ) {
         self.entries = entries.map{ LogEntry(entry: $0) }
         self.title = title
@@ -27,9 +25,9 @@ public struct LogDisplay: View {
         self.copyToClipboardButtonText = copyToClipboardButtonText
     }
     
-    let title: LocalizedStringKey
-    let dismissButtonText: LocalizedStringKey
-    let copyToClipboardButtonText: LocalizedStringKey
+    let title: LocalizedStringResource
+    let dismissButtonText: LocalizedStringResource
+    let copyToClipboardButtonText: LocalizedStringResource
     
     public var body: some View {
         NavigationStack {

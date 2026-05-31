@@ -10,7 +10,7 @@ import OSLog
 
 public struct ExportLogsButton: View {
     
-    let description: LocalizedStringKey
+    let description: LocalizedStringResource
     
     @EnvironmentObject var errorHandler: ErrorHandler
     
@@ -20,11 +20,12 @@ public struct ExportLogsButton: View {
     
     @State private var showExport: Bool = false
     
+    @MainActor
     private func exportLogs() {
         do {
             entries = try self.errorHandler.exportLogs()
         } catch {
-            errorHandler.handle(error, while: "exporting logs")
+            errorHandler.handle(error, while: LocalizedStringResource("exporting logs", bundle: .module))
         }
     }
     
@@ -32,7 +33,7 @@ public struct ExportLogsButton: View {
      A button to export debug logs.
      - Parameter description: The text to show on the button.
      */
-    public init(_ description: LocalizedStringKey) {
+    public init(_ description: LocalizedStringResource) {
         self.description = description
     }
     
@@ -52,7 +53,7 @@ public struct ExportLogsButton: View {
             }
         }
         .sheet(isPresented: $showExport) {
-            LogDisplay(entries: entries, title: "Logs", dismissButtonText: "Dismiss", copyToClipboardButtonText: "Copy to Clipboard")
+            LogDisplay(entries: entries, title: LocalizedStringResource("Logs", bundle: .module), dismissButtonText: LocalizedStringResource("Dismiss", bundle: .module), copyToClipboardButtonText: LocalizedStringResource("Copy to clipboard", bundle: .module))
                 .padding(.horizontal)
         }
     }

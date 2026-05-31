@@ -15,7 +15,7 @@ struct ThrowingRefreshableViewModifier: ViewModifier {
     /// The task to execute.
     let action: () async throws -> Void
     /// Description of the task (shown in error message)
-    let taskDescription: String
+    let taskDescription: LocalizedStringResource
     /// Whether this error message can be suppressed if it's a network error. Only applies if `suppressNetworkErrors` is enabled
     var suppressable: Bool = false
     /// Whether the error should be blocking (alert) or not (toast)
@@ -61,7 +61,7 @@ extension View {
         .withErrorHandling()
      ```
      */
-    public func throwingRefreshable(taskDescription: String, blockUserInteraction: Bool = false, suppressable: Bool = false, _ action: @escaping () async throws -> Void, dismissAction: (() -> Void)? = nil) -> some View {
+    public func throwingRefreshable(taskDescription: LocalizedStringResource, blockUserInteraction: Bool = false, suppressable: Bool = false, _ action: @escaping () async throws -> Void, dismissAction: (() -> Void)? = nil) -> some View {
         modifier(ThrowingRefreshableViewModifier(action: action, taskDescription: taskDescription, suppressable: suppressable, blockUserInteraction: blockUserInteraction, dismissAction: dismissAction))
     }
 }

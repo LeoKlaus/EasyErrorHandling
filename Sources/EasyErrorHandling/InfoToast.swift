@@ -16,9 +16,9 @@ public class InfoToast: Toast {
     
     public let id = UUID()
     
-    let description: String
+    let description: LocalizedStringResource
     
-    init(_ description: String) {
+    init(_ description: LocalizedStringResource) {
         self.description = description
     }
 }

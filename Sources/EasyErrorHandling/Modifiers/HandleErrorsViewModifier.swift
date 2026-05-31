@@ -38,8 +38,8 @@ struct HandleErrorsViewModifier: ViewModifier {
                     .alert(item: $errorHandler.currentAlert) { currentAlert in
                         Alert(
                             title: Text(currentAlert.title),
-                            message: Text(currentAlert.message + "\n Check the logs for more details."),
-                            dismissButton: .default(Text("Ok")) {
+                            message: Text(String(localized: currentAlert.message) + "\n" +  String(localized: "Check the logs for more details.", bundle: .module)),
+                            dismissButton: .default(Text("Ok", bundle: .module)) {
                                 currentAlert.dismissAction?()
                             }
                         )

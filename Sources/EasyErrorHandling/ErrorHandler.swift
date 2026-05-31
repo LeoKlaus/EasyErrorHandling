@@ -15,7 +15,7 @@ public class ErrorHandler: ObservableObject {
         category: String(describing: ErrorHandler.self)
     )
     
-    public static let shared = ErrorHandler()
+    @MainActor public static let shared = ErrorHandler()
     
     /// Whether to show error messages for network errors
     private(set) var suppressErrors: Bool = false
@@ -158,7 +158,7 @@ public class ErrorHandler: ObservableObject {
      - text: Information to display.
      */
     @MainActor
-    public func showInfo(_ text: String) {
+    public func showInfo(_ text: LocalizedStringResource) {
         self.showToast(InfoToast(text))
 #if os(iOS) && !targetEnvironment(simulator)
         ImpactGenerator.shared.notify(type: .success)
@@ -173,18 +173,18 @@ public class ErrorHandler: ObservableObject {
         - blockUserInteraction: Whether this error should be shown as toast or alert.
      */
     @MainActor
-    public func handle(_ text: String, while performedTask: String, blockUserInteraction: Bool = false) {
+    public func handle(_ text: LocalizedStringResource, while performedTask: LocalizedStringResource, blockUserInteraction: Bool = false) {
         if Task.isCancelled && self.ignoreCancellations {
-            Self.logger.debug("\(performedTask, privacy: .public) was cancelled.")
+            Self.logger.debug("\(performedTask.key, privacy: .public) was cancelled.")
             return
         }
         
-        Self.logger.error("Error while \(performedTask, privacy: .public):\n\(text, privacy: .public)")
+        Self.logger.error("Error while \(performedTask.key, privacy: .public):\n\(text.key, privacy: .public)")
         
         if blockUserInteraction {
-            currentAlert = ErrorAlert(title: "Error \(performedTask)", message: text)
+            currentAlert = ErrorAlert(title: LocalizedStringResource("Error \(performedTask)", bundle: .module), message: text)
         } else {
-            self.showToast(ErrorToast(errorDescription: text))
+            self.showToast(ErrorToast(errorDescription: text, performedTask: performedTask))
         }
         
         #if os(iOS) && !targetEnvironment(simulator)
@@ -201,15 +201,15 @@ public class ErrorHandler: ObservableObject {
         - dismissAction: A function that will be executed when the user dismisses the alert.
      */
     @MainActor
-    public func handle(_ text: String, while performedTask: String, blockUserInteraction: Bool = false, dismissAction: (() -> Void)?) {
+    public func handle(_ text: LocalizedStringResource, while performedTask: LocalizedStringResource, blockUserInteraction: Bool = false, dismissAction: (() -> Void)?) {
         if Task.isCancelled && self.ignoreCancellations {
-            Self.logger.debug("\(performedTask, privacy: .public) was cancelled.")
+            Self.logger.debug("\(performedTask.key, privacy: .public) was cancelled.")
             return
         }
         
-        Self.logger.error("Error while \(performedTask, privacy: .public):\n\(text, privacy: .public)")
+        Self.logger.error("Error while \(performedTask.key, privacy: .public):\n\(text.key, privacy: .public)")
         
-        currentAlert = ErrorAlert(title: "Error \(performedTask)", message: text, dismissAction: dismissAction)
+        currentAlert = ErrorAlert(title: LocalizedStringResource("Error \(performedTask)", bundle: .module), message: text, dismissAction: dismissAction)
         
         #if os(iOS) && !targetEnvironment(simulator)
         ImpactGenerator.shared.notify(type: .error)
@@ -225,22 +225,22 @@ public class ErrorHandler: ObservableObject {
         - blockUserInteraction: Whether this error should be shown as toast or alert.
      */
     @MainActor
-    public func handle(_ error: Error, while performedTask: String, suppressable: Bool = false, blockUserInteraction: Bool = false) {
+    public func handle(_ error: Error, while performedTask: LocalizedStringResource, suppressable: Bool = false, blockUserInteraction: Bool = false) {
         if Task.isCancelled && self.ignoreCancellations {
-            Self.logger.debug("\(performedTask, privacy: .public) was cancelled.")
+            Self.logger.debug("\(performedTask.key, privacy: .public) was cancelled.")
             return
         }
         
-        Self.logger.error("Error while \(performedTask, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
+        Self.logger.error("Error while \(performedTask.key, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
         
         if self.suppressErrors && suppressable && self.suppressor.isSuppressable(error) {
             return
         }
         
         if blockUserInteraction {
-            currentAlert = ErrorAlert(title: "Error \(performedTask)", message: error.localizedDescription)
+            currentAlert = ErrorAlert(title: LocalizedStringResource("Error \(performedTask)", bundle: .module), error: error)
         } else {
-            self.showToast(ErrorToast(error: error))
+            self.showToast(ErrorToast(error: error, performedTask:  performedTask))
         }
         
         #if os(iOS) && !targetEnvironment(simulator)
@@ -262,20 +262,19 @@ public class ErrorHandler: ObservableObject {
         - dismissAction: A function that will be executed when the user dismisses the alert.
      */
     @MainActor
-    public func handle(_ error: Error, while performedTask: String, suppressable: Bool = false, dismissAction: (() -> Void)?) {
+    public func handle(_ error: Error, while performedTask: LocalizedStringResource, suppressable: Bool = false, dismissAction: (() -> Void)?) {
         if Task.isCancelled && self.ignoreCancellations {
-            Self.logger.debug("\(performedTask, privacy: .public) was cancelled.")
+            Self.logger.debug("\(performedTask.key, privacy: .public) was cancelled.")
             return
         }
         
-        Self.logger.error("Error while \(performedTask, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
+        Self.logger.error("Error while \(performedTask.key, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
         
         if self.suppressErrors && suppressable && self.suppressor.isSuppressable(error) {
             return
         }
         
-        currentAlert = ErrorAlert(title: "Error \(performedTask)", message: error.localizedDescription, dismissAction: dismissAction)
-        
+        currentAlert = ErrorAlert(title: LocalizedStringResource("Error \(performedTask)", bundle: .module), error: error, dismissAction: dismissAction)
         #if os(iOS) && !targetEnvironment(simulator)
         ImpactGenerator.shared.notify(type: .error)
         #endif

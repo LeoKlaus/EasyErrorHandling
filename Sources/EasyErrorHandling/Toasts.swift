@@ -26,7 +26,7 @@ struct ToastView: View {
                     VStack(alignment: .leading) {
                         Text(error.errorDescription)
                             .lineLimit(2)
-                        Text("Tap for more information")
+                        Text("Tap for more information", bundle: .module)
                             .font(.caption)
                             .foregroundStyle(.secondary)
                     }
@@ -119,5 +119,5 @@ extension EnvironmentValues {
 }
 
 #Preview {
-    ToastView(toast: ErrorToast(errorDescription: "Some error"))
+    ToastView(toast: ErrorToast(errorDescription: "Some error", performedTask: "loading something"))
 }

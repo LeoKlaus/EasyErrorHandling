@@ -16,9 +16,9 @@ public final class ProgressToast: NSObject, Toast, @unchecked Sendable {
     
     public let foregroundStyle: Color = .accentColor
     
-    let hint: String
+    let hint: LocalizedStringResource
     
-    public init(hint: String) {
+    public init(hint: LocalizedStringResource) {
         self.hint = hint
     }
     
