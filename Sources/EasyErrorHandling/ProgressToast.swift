@@ -17,9 +17,9 @@ public final class ProgressToast: NSObject, Toast {
 
     public let foregroundStyle: Color = .accentColor
 
-    let hint: LocalizedStringResource
+    public let hint: LocalizedStringResource
 
-    let progressUpdates: AsyncStream<Double>
+    public let progressUpdates: AsyncStream<Double>
     private let continuation: AsyncStream<Double>.Continuation
 
     public init(hint: LocalizedStringResource) {
@@ -29,6 +29,7 @@ public final class ProgressToast: NSObject, Toast {
 
     public func invalidate() {
         continuation.finish()
+        ErrorHandler.shared.removeToast(self.id)
     }
 }
 
