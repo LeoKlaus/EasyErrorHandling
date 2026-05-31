@@ -9,45 +9,37 @@ import SwiftUI
 
 
 /// A toast showing the progress of a task.
-public final class ProgressToast: NSObject, Toast, @unchecked Sendable {
+@MainActor
+public final class ProgressToast: NSObject, Toast {
     public let id = UUID()
-    
+
     public let maxWidth: Double = 200
-    
+
     public let foregroundStyle: Color = .accentColor
-    
+
     let hint: LocalizedStringResource
-    
+
     public init(hint: LocalizedStringResource) {
         self.hint = hint
     }
-    
-    private let queue: DispatchQueue = DispatchQueue(label: "ProgressToast.sync")
-    
-    private var _progress: Double = 0
-    
-    var progress: Double { queue.sync { _progress } }
-    
-    func update(_ newValue: Double) {
-        queue.sync { _progress = newValue }
-    }
-    
+
+    private(set) var progress: Double = 0
+
     public func invalidate() {
-        self.update(1)
-        DispatchQueue.main.async {
-            ErrorHandler.shared.removeToast(self.id)
-        }
+        progress = 1
+        ErrorHandler.shared.removeToast(id)
     }
-    
-    var progressObserver: NSKeyValueObservation?
+
+    private var progressObserver: NSKeyValueObservation?
 }
 
-extension ProgressToast: URLSessionTaskDelegate {
+extension ProgressToast: @preconcurrency URLSessionTaskDelegate {
     
     public func urlSession(_ session: URLSession, didCreateTask task: URLSessionTask) {
-        self.progressObserver = task.progress.observe(\.fractionCompleted) { prog, _ in
-            //self.progress = prog.fractionCompleted
-            self.update(prog.fractionCompleted)
+        progressObserver = task.progress.observe(\.fractionCompleted) { [weak self] prog, _ in
+            Task { @MainActor [weak self] in
+                self?.progress = prog.fractionCompleted
+            }
         }
     }
 }

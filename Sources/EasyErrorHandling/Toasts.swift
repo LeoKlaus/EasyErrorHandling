@@ -15,7 +15,6 @@ struct ToastView: View {
     let toast: any Toast
     
     @State private var progress: Double = 0
-    @State private var timer: Timer?
     
     var onTap: ((ErrorToast) -> Void)?
     
@@ -62,20 +61,15 @@ struct ToastView: View {
                 )
                 .foregroundStyle(.secondary)
                 .task {
-                    self.timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { timer in
-                        DispatchQueue.main.async {
-                            self.progress = progress.progress
-                        }
-                        
+                    while !Task.isCancelled {
+                        self.progress = progress.progress
                         if progress.progress >= 1 {
-                            DispatchQueue.main.async {
-                                withAnimation {
-                                    self.dismissToast(self.toast.id)
-                                }
-                                self.timer = nil
+                            withAnimation {
+                                self.dismissToast(self.toast.id)
                             }
-                            timer.invalidate()
+                            break
                         }
+                        try? await Task.sleep(for: .milliseconds(500))
                     }
                 }
             } else if let info = toast as? InfoToast {
