@@ -104,7 +104,7 @@ struct ToastView: View {
         .padding()
         .background {
             #if os(watchOS)
-            Capsule(style: .circular).fill(.gray.opacity(0.2))
+            Capsule(style: .circular).fill(.black.opacity(0.7))
             #else
             Capsule(style: .circular).fill(.thinMaterial)
             #endif
