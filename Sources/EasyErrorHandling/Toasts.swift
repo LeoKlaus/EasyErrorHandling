@@ -7,6 +7,28 @@
 
 import SwiftUI
 
+private struct AutoDismissModifier: ViewModifier {
+    @Environment(\.dismissToast) var dismissToast
+    let id: UUID
+
+    func body(content: Content) -> some View {
+        content
+            .gesture(DragGesture(minimumDistance: 10).onEnded { _ in
+                withAnimation { dismissToast(id) }
+            })
+            .task {
+                try? await Task.sleep(for: .seconds(5))
+                withAnimation { dismissToast(id) }
+            }
+    }
+}
+
+private extension View {
+    func autoDismiss(id: UUID) -> some View {
+        modifier(AutoDismissModifier(id: id))
+    }
+}
+
 struct ToastView: View {
     
     @Environment(\.dismissToast) var dismissToast
@@ -42,18 +64,7 @@ struct ToastView: View {
                         }
                     }
                 }
-                .gesture(DragGesture(minimumDistance: 10).onEnded { _ in
-                    withAnimation {
-                        self.dismissToast(self.toast.id)
-                    }
-                })
-                .task {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                        withAnimation {
-                            self.dismissToast(self.toast.id)
-                        }
-                    }
-                }
+                .autoDismiss(id: toast.id)
             } else if let progress = toast as? ProgressToast {
                 ProgressView(
                     progress.hint,
@@ -84,18 +95,7 @@ struct ToastView: View {
                         self.dismissToast(self.toast.id)
                     }
                 }
-                .gesture(DragGesture(minimumDistance: 10).onEnded { _ in
-                    withAnimation {
-                        self.dismissToast(self.toast.id)
-                    }
-                })
-                .task {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                        withAnimation {
-                            self.dismissToast(self.toast.id)
-                        }
-                    }
-                }
+                .autoDismiss(id: toast.id)
             }
         }
         .transition(.move(edge: .top).combined(with: .opacity))
