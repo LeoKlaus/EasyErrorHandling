@@ -21,9 +21,9 @@ public struct ExportLogsButton: View {
     @State private var showExport: Bool = false
     
     @MainActor
-    private func exportLogs() {
+    private func exportLogs() async {
         do {
-            entries = try self.errorHandler.exportLogs()
+            entries = try await self.errorHandler.exportLogs()
         } catch {
             errorHandler.handle(error, while: LocalizedStringResource("exporting logs", bundle: .module))
         }
@@ -40,8 +40,8 @@ public struct ExportLogsButton: View {
     public var body: some View {
         Button {
             isCollectingLogs = true
-            DispatchQueue.global(qos: .userInitiated).async {
-                exportLogs()
+            Task {
+                await exportLogs()
                 isCollectingLogs = false
                 showExport = true
             }
