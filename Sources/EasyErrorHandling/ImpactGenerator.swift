@@ -11,7 +11,8 @@ import SwiftUI
 
 #if os(iOS) && !targetEnvironment(simulator)
 /// A helper to simplify working with haptic feedback
-public class ImpactGenerator {
+@MainActor
+public final class ImpactGenerator {
     public static let shared = ImpactGenerator()
     
     public func impactOccured(style: UIImpactFeedbackGenerator.FeedbackStyle = .medium) {
