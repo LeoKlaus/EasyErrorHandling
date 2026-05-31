@@ -13,9 +13,11 @@ private struct AutoDismissModifier: ViewModifier {
 
     func body(content: Content) -> some View {
         content
+        #if !os(tvOS)
             .gesture(DragGesture(minimumDistance: 10).onEnded { _ in
                 withAnimation { dismissToast(id) }
             })
+        #endif
             .task {
                 try? await Task.sleep(for: .seconds(5))
                 withAnimation { dismissToast(id) }
@@ -97,7 +99,11 @@ struct ToastView: View {
         .transition(.move(edge: .top).combined(with: .opacity))
         .padding()
         .background {
+            #if os(watchOS)
+            Capsule(style: .circular).fill(.gray.opacity(0.2))
+            #else
             Capsule(style: .circular).fill(.thinMaterial)
+            #endif
         }
         .frame(maxWidth: toast.maxWidth)
     }

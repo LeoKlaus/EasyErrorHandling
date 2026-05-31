@@ -8,7 +8,9 @@ let package = Package(
     defaultLocalization: "en",
     platforms: [
         .iOS(.v16),
-        .macOS(.v13)
+        .macOS(.v13),
+        .watchOS(.v9),
+        .tvOS(.v16)
     ],
     products: [
         // Products define the executables and libraries a package produces, making them visible to other packages.

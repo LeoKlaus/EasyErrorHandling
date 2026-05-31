@@ -52,6 +52,7 @@ public struct LogDisplay: View {
                     }
                 }
                 
+                #if !os(watchOS) && !os(tvOS)
                 ToolbarItem(placement: .confirmationAction) {
                     Button {
                         #if canImport(UIKit)
@@ -65,6 +66,7 @@ public struct LogDisplay: View {
                         Label(copyToClipboardButtonText, systemImage: "doc.on.doc.fill")
                     }
                 }
+                #endif
             }
         }
     }

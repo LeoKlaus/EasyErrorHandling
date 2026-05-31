@@ -104,6 +104,15 @@ public final class ErrorHandler: ObservableObject {
     
     
     private init() { }
+
+    /// Resets all state. For testing purposes only.
+    func reset() {
+        toasts = []
+        currentAlert = nil
+        suppressor = DefaultErrorSuppressor()
+        suppressErrors = false
+        autoSuppressErrors = false
+    }
     
     /**
      Shows the given toast to the user.
