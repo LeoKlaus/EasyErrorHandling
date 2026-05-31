@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// A toast showing an info message.
-public class InfoToast: Toast {
+public final class InfoToast: Toast {
     
     public let maxWidth: Double = .infinity
     
@@ -16,9 +16,9 @@ public class InfoToast: Toast {
     
     public let id = UUID()
     
-    let description: LocalizedStringResource
+    public let description: LocalizedStringResource
     
-    init(_ description: LocalizedStringResource) {
+    public init(_ description: LocalizedStringResource) {
         self.description = description
     }
 }

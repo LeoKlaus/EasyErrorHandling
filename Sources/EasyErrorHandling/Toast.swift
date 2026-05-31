@@ -12,5 +12,4 @@ public protocol Toast: Identifiable {
     var id: UUID { get }
     
     var maxWidth: Double { get }
-    var foregroundStyle: Color { get }
 }

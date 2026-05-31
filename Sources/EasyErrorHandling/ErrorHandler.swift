@@ -133,8 +133,8 @@ public final class ErrorHandler: ObservableObject {
      - Returns: An array of strings, each representing a single log entry.
      */
     public func exportLogs() async throws -> [String] {
+        let subsystem = Self.subsystem
         return try await Task.detached(priority: .userInitiated) {
-            let subsystem = await Self.subsystem
             let store = try OSLogStore(scope: .currentProcessIdentifier)
             let date = Date.now.addingTimeInterval(-24 * 3600)
             let position = store.position(date: date)

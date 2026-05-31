@@ -8,7 +8,7 @@
 import SwiftUI
 
 /// A toast showing an error message.
-public class ErrorToast: Toast {
+public final class ErrorToast: Toast {
     
     public let maxWidth: Double = .infinity
     

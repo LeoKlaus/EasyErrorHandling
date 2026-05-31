@@ -7,11 +7,11 @@
 
 import Foundation
 
-struct ErrorAlert: Identifiable {
-    var id = UUID()
-    var title: LocalizedStringResource = LocalizedStringResource("Error", bundle: .module)
-    var message: LocalizedStringResource
-    var dismissAction: (() -> Void)?
+public struct ErrorAlert: Identifiable {
+    public var id = UUID()
+    public var title: LocalizedStringResource = LocalizedStringResource("Error", bundle: .module)
+    public var message: LocalizedStringResource
+    public var dismissAction: (() -> Void)?
     
     public init(title: LocalizedStringResource, message: LocalizedStringResource, dismissAction: (() -> Void)? = nil) {
         self.title = title
