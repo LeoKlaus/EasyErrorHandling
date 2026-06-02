@@ -210,11 +210,12 @@ public final class ErrorHandler: ObservableObject {
             return
         }
 
-        Self.logger.error("Error while \(performedTask.key, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
-
         if self.suppressErrors && suppressable && self.suppressor.isSuppressable(error) {
+            Self.logger.debug("(Suppressed) Error while \(performedTask.key, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
             return
         }
+        
+        Self.logger.error("Error while \(performedTask.key, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
 
         if blockUserInteraction || dismissAction != nil {
             currentAlert = ErrorAlert(title: LocalizedStringResource("Error while \(performedTask)"), error: error, dismissAction: dismissAction)
