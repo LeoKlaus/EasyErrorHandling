@@ -25,7 +25,7 @@ struct HandleErrorsViewModifier: ViewModifier {
                 VStack {
                     ForEach(self.errorHandler.toasts.prefix(3), id: \.id) { toast in
                         ToastView(toast: toast, onTap: self.onTap)
-                            .environment(\.dismissToast, dismiss)
+                            .environment(\.dismissToast, DismissToastAction(action: dismiss))
                     }
                 }
                 #if os(iOS)

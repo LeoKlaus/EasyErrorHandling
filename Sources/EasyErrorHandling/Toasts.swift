@@ -114,8 +114,16 @@ struct ToastView: View {
 }
 
 
+public struct DismissToastAction {
+    let action: (UUID) -> Void
+
+    public func callAsFunction(_ id: UUID) {
+        action(id)
+    }
+}
+
 extension EnvironmentValues {
-    @Entry var dismissToast: (UUID) -> () = { _ in }
+    @Entry var dismissToast: DismissToastAction = DismissToastAction { _ in }
 }
 
 #Preview("Error") {
