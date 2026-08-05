@@ -1,0 +1,74 @@
+#if os(iOS) || os(macOS)
+import Foundation
+
+/// Read/write access to persisted `CrashReport`s, shared between a host app (reads, to surface
+/// them in its own UI — see `CrashReportsSection`) and its `CrashReporterExtension` (writes, from
+/// `CrashReporter.handle`) — the two run as separate processes, so this is deliberately just plain
+/// file I/O against a shared App Group directory rather than anything requiring a live connection.
+public enum CrashReportStore {
+    private static func directory(appGroupIdentifier: String) -> URL? {
+        FileManager.default
+            .containerURL(forSecurityApplicationGroupIdentifier: appGroupIdentifier)?
+            .appending(path: "crashReports")
+    }
+
+    private static func url(for id: UUID, appGroupIdentifier: String) -> URL? {
+        self.directory(appGroupIdentifier: appGroupIdentifier)?.appending(path: "\(id.uuidString).json")
+    }
+
+    /// The sibling `.ips` file for a report, if `IPSReportBuilder` wrote one at crash time. Not
+    /// every report necessarily has one — the `.ips` write is itself best-effort — so callers
+    /// should check `FileManager` before using this for anything other than a save/delete target.
+    public static func ipsURL(for id: UUID, appGroupIdentifier: String) -> URL? {
+        self.directory(appGroupIdentifier: appGroupIdentifier)?.appending(path: "\(id.uuidString).ips")
+    }
+
+    /// Called by the extension after a crash. Best-effort — there's no one to report a failure to
+    /// at this point, and a lost crash report is preferable to a crash *in* the crash handler.
+    public static func save(_ report: CrashReport, appGroupIdentifier: String) {
+        guard let directory = self.directory(appGroupIdentifier: appGroupIdentifier),
+              let url = self.url(for: report.id, appGroupIdentifier: appGroupIdentifier)
+        else { return }
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        guard let data = try? JSONEncoder().encode(report) else { return }
+        try? data.write(to: url, options: .atomic)
+    }
+
+    /// Saves the `.ips` sibling for a report already written via `save(_:appGroupIdentifier:)`.
+    /// Kept separate rather than a field on `CrashReport` itself — the `.ips` bytes are only ever
+    /// read back as a file, never decoded, so there's no reason to round-trip them through JSON.
+    public static func saveIPS(_ data: Data, for id: UUID, appGroupIdentifier: String) {
+        guard let directory = self.directory(appGroupIdentifier: appGroupIdentifier),
+              let url = self.ipsURL(for: id, appGroupIdentifier: appGroupIdentifier)
+        else { return }
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try? data.write(to: url, options: .atomic)
+    }
+
+    /// All persisted reports, newest first. Reports written under an older schema version simply
+    /// fail to decode and are silently skipped, same as a corrupt file.
+    public static func loadAll(appGroupIdentifier: String) -> [CrashReport] {
+        guard let directory = self.directory(appGroupIdentifier: appGroupIdentifier) else { return [] }
+        let urls = (try? FileManager.default.contentsOfDirectory(at: directory, includingPropertiesForKeys: nil)) ?? []
+        let decoder = JSONDecoder()
+        return urls
+            .compactMap { url in (try? Data(contentsOf: url)).flatMap { try? decoder.decode(CrashReport.self, from: $0) } }
+            .sorted { $0.date > $1.date }
+    }
+
+    public static func delete(_ report: CrashReport, appGroupIdentifier: String) {
+        if let url = self.url(for: report.id, appGroupIdentifier: appGroupIdentifier) {
+            try? FileManager.default.removeItem(at: url)
+        }
+        if let ipsURL = self.ipsURL(for: report.id, appGroupIdentifier: appGroupIdentifier) {
+            try? FileManager.default.removeItem(at: ipsURL)
+        }
+    }
+
+    public static func deleteAll(appGroupIdentifier: String) {
+        for report in self.loadAll(appGroupIdentifier: appGroupIdentifier) {
+            self.delete(report, appGroupIdentifier: appGroupIdentifier)
+        }
+    }
+}
+#endif
