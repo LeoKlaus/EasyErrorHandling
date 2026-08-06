@@ -231,4 +231,24 @@ public final class ErrorHandler: ObservableObject {
             self.suppressErrors = true
         }
     }
+    
+    /**
+     Silently log an error.
+     - Parameters:
+     - text: Description of the error.
+     - while: The task that is throwing the error (this will be shown to the user as `Error while <performedTask>`).
+     */
+    public func logError(_ text: LocalizedStringResource, while performedTask: LocalizedStringResource) {
+        Self.logger.error("Error while \(performedTask.key, privacy: .public):\n\(text.key, privacy: .public)")
+    }
+    
+    /**
+     Silently log an error.
+     - Parameters:
+     - error: The error to handle. Should conform to `LocalizedError`.
+     - while: The task that is throwing the error (this will be shown to the user as `Error while <performedTask>`).
+     */
+    public func logError(_ error: Error, while performedTask: LocalizedStringResource) {
+        Self.logger.error("Error while \(performedTask.key, privacy: .public): \(error.localizedDescription, privacy: .public)\n\(String(describing: error), privacy: .public)")
+    }
 }
